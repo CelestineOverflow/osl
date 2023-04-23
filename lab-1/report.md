@@ -187,11 +187,7 @@ The results are shown in the table below.
 
 ![sum](sum_of_counter_by_case.png)
 
-### Conclusion from Approach 1
-As seen from the results, the processes with the same niceness value are executed yield about the same counter val, contrary to the case where -20 and 20 are used where there is a clear distinction between the two processes with the negative niceness value yielding a higher counter value than the positive niceness value.
-A interesting side note is that the niceness did not change the total throughput of each case in a significant way, as the total work done by each case is about the same.
 
-Labs Task 2
 
 * Change the „nice value“ of one process by using the renice command. What’s the
 effect to the output? Explain!
@@ -245,3 +241,158 @@ of calculation time?
 
 ![output](with_delay.png)
 
+### Conclusion from Approach 1
+As seen from the results, the processes with the same niceness value are executed yield about the same counter val, contrary to the case where -20 and 20 are used where there is a clear distinction between the two processes with the negative niceness value yielding a higher counter value than the positive niceness value.
+A interesting side note is that the niceness did not change the total throughput of each case in a significant way, as the total work done by each case is about the same.
+
+## Aproach 2
+
+To create and manipulate two competing processes, we used the fork() call taught in the lectures. The idea was to create two functions that output to the screen, and track their response time (Elapsed t_exec) so as to observe how the scheduler executes them while influencing and changing the priorities(renice).
+
+2.1 Change the nice value
+A c-program with the fork() call was developed to create two competing processes, both of which write to the screen without using any stream functions.
+
+task2a.c
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/wait.h>
+#include <sys/types.h>
+#include <time.h>
+int main()
+{
+    pid_t pid = fork();
+    clock_t start, endOfParent, endOfChild;
+    if (pid < 0)
+    {
+        perror("Fork failed");
+        exit(1);
+    }
+    while (1)
+    {
+        start = clock();
+
+
+        if (pid > 0)
+        { // fork() returns the parent process, the process ID of the child process.
+            printf("I'm Parent with pid:\t%d\n", getpid());
+            endOfParent = clock();
+            printf("Elapsed t_exec - Parent:\t%.4f s\n", ((double)(endOfParent - start)) * 1e3 / CLOCKS_PER_SEC);
+        }
+        else if (pid == 0)
+        { // fork() returns the child process, "0".
+            printf("I'm Child with pid:\t%d\n", getpid());
+            endOfChild = clock();
+            printf("Elapsed t_exec - Child:\t%.4f s\n", ((double)(endOfChild - start)) * 1e3 / CLOCKS_PER_SEC);
+        }
+    }
+
+
+    return 0;
+}
+```
+
+![fig_1.png](fig_1.png)
+Figure 1 Termial output when parent and child process’s niceness values are not changed
+
+
+    Then we changed the nice value of the parent process to 10 using the renice command.
+
+![fig_2.png](fig_2.png)
+Figure 2 nice value change
+
+![fig_3.png](fig_3.png)
+Figure 3 Terminal output after nice values change 
+
+As we can see above after the renice the parent process takes longer to finish executing because of the new lower priority.
+
+
+## 2.2 The effect of a waiting period of 1 ms
+
+usleep() was used to give a 1 ms delay after each output to the screen in the following task.
+
+task2b.c
+
+```c	
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/wait.h>
+#include <sys/types.h>
+#include <time.h>
+int main()
+{
+    pid_t pid = fork();
+    clock_t start, endOfParent, endOfChild;
+    if (pid < 0)
+    {
+        perror("Fork failed");
+        exit(1);
+    }
+    while (1)
+    {
+        start = clock();
+
+
+        if (pid > 0)
+        { // fork() returns the parent process, the process ID of the child process.
+            printf("I'm Parent with pid:\t%d\n", getpid());
+            usleep(1000);
+            endOfParent = clock();
+            printf("Elapsed t_exec - Parent:\t%.4f s\n", ((double)(endOfParent - start)) * 1e3 / CLOCKS_PER_SEC);
+        }
+        else if (pid == 0)
+        { // fork() returns the child process, "0".
+            printf("I'm Child with pid:\t%d\n", getpid());
+            usleep(1000);
+            endOfChild = clock();
+            printf("Elapsed t_exec - Child:\t%.4f s\n", ((double)(endOfChild - start)) * 1e3 / CLOCKS_PER_SEC);
+        }
+    }
+
+
+    return 0;
+}
+
+```
+
+![fig_4.png](fig_4.png)
+Figure 5: Terminal output after adding a 1ms delay
+
+As we can observe above the execution times of each process increased with a factor of closer to 10 in comparison to before. Also, we observed that the execution times of both processes are very similar now.
+
+## 2.3 Simulatanuoesrunning of time-consuming program
+Part a) of task 2 was run again but now while running a time-consuming program in the background. We can see that the execution times have slightly increased, the max being around 9ms(Figure 7).
+
+
+![fig_5.png](fig_5.png)
+
+Figure 5: Terminal output after adding a 1ms delay
+
+## 2.3 Simulatanuoesrunning of time-consuming program
+
+* of task 2 was run again but now while running a time-consuming program in the background. 
+
+Part a) of task 2 was run again but now while running a time-consuming program in the background.   
+
+    We can see that the execution times have slightly increased, the max being around 9ms(Figure 7).
+
+Figure 6 Terminal output when only task2a.c is run
+
+![fig_6.png](fig_6.png)
+
+![fig_7.png](fig_7.png)
+    Figure 7 Terminal output when task2a.c and the time-consuming program are run
+
+
+Part b) of task 2 was run again but now while running a time-consuming program in the background. We can see that the execution times have increased and the max is now around 0.18s. This could be due to the CPU having to share its cores among the time-consuming process and the parent and child processes that print out to the terminal(Figure 9).D
+
+![fig_8.png](fig_8.png)
+
+Figure 8 Terminal output when only task2b.c is run
+
+![fig_9.png](fig_9.png)
+
+Figure 9 Termial output when task2b.c and the time-consuming program are run
