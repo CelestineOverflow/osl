@@ -1,5 +1,7 @@
 # OSL LAB-1
 
+Team Members: Celestine Machuca.
+Thishan Warnakulasooriy.
 ## Task 1
 ### Bash Script
 ```bash
@@ -80,7 +82,7 @@ int main(int argc, char *argv[]) {
 ### Measured Frequency
 ![meas1](tek00000_c_meas.png)
 
-
+1.4974 Mhz
 
 ## Task 2
 
@@ -169,20 +171,77 @@ The results are shown in the table below.
 ### Results
 
 #### Equal Niceness Values
-
     niceness_values=(0 0 0 0 0 0 0 0 0 0)
-
 ![equal](equal-niceness.png)
 
 #### Different Niceness Values
-
+    niceness_values=(-20 0 0 0 0 0 0 0 0 20)
 ![diff](dif-nicess.png)
 
-    niceness_values=(-20 0 0 0 0 0 0 0 0 20)
 
 ### Stair Niceness Values
     niceness_values=(-20 -15 -10 -5 0 5 10 15 20 20)
 ![stair](staircase.png)
 
+### Sum of work done by test case
+
+![sum](sum_of_counter_by_case.png)
+
 ### Conclusion from Approach 1
 As seen from the results, the processes with the same niceness value are executed yield about the same counter val, contrary to the case where -20 and 20 are used where there is a clear distinction between the two processes with the negative niceness value yielding a higher counter value than the positive niceness value.
+A interesting side note is that the niceness did not change the total throughput of each case in a significant way, as the total work done by each case is about the same.
+
+Labs Task 2
+
+* Change the „nice value“ of one process by using the renice command. What’s the
+effect to the output? Explain!
+
+Process tested with niceness value of 0.
+
+``` c
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/wait.h>
+#include <sys/types.h>
+#include <sys/time.h>
+
+
+
+int main() {
+    pid_t pid = fork();
+
+    if (pid < 0) {
+        perror("Fork failed");
+        exit(1);
+    }
+    
+    int is_child = pid == 0;
+
+    int iterations = 1000000;
+    for (int i = 0; i < iterations; i++) {
+        if (is_child) {
+            putchar('x');
+        } else {
+            putchar('.');
+        }
+    }
+}
+        
+
+```
+
+Output of the process with
+
+![output](without_delay.png)
+
+Timelane of the process with niceness value of 0
+
+![timelane](fork_image.png)
+
+
+* Insert a waiting period of 1 ms after each output. What’s the effect to the assignment
+of calculation time?
+
+![output](with_delay.png)
+
