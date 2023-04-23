@@ -53,8 +53,10 @@ int main(int argc, char *argv[]) {
     volatile unsigned int *gpio_cleardataout_addr = NULL;
     volatile void *gpio_addr = NULL;
 
-    int fd = open("/dev/mem", O_RDWR | O_SYNC);
-    gpio_addr = mmap(0, 4096, PROT_READ | PROT_WRITE, MAP_SHARED, fd, GPIO5_START_ADDR);
+    int fd = open("/dev/mem", 
+                    O_RDWR | O_SYNC);
+    gpio_addr = mmap(0, 4096, PROT_READ | PROT_WRITE, 
+                        MAP_SHARED, fd, GPIO5_START_ADDR);
 
     gpio_oe_addr = gpio_addr + GPIO_OE;
     gpio_cleardataout_addr = gpio_addr + GPIO_CLEARDATAOUT;
@@ -231,6 +233,7 @@ Output of the process with
 
 ![output](without_delay.png)
 
+
 Timelane of the process with niceness value of 0
 
 ![timelane](fork_image.png)
@@ -277,34 +280,46 @@ int main()
 
         if (pid > 0)
         { // fork() returns the parent process, the process ID of the child process.
-            printf("I'm Parent with pid:\t%d\n", getpid());
+            printf("I'm Parent with pid:\t%d\n",
+            getpid());
             endOfParent = clock();
-            printf("Elapsed t_exec - Parent:\t%.4f s\n", ((double)(endOfParent - start)) * 1e3 / CLOCKS_PER_SEC);
+            printf("Elapsed t_exec - 
+            Parent:\t%.4f s\n", ((double)
+            (endOfParent - start)) * 1e3 / CLOCKS_PER_SEC);
         }
         else if (pid == 0)
         { // fork() returns the child process, "0".
-            printf("I'm Child with pid:\t%d\n", getpid());
+            printf("I'm Child with pid:\t%d\n",
+            getpid());
             endOfChild = clock();
-            printf("Elapsed t_exec - Child:\t%.4f s\n", ((double)(endOfChild - start)) * 1e3 / CLOCKS_PER_SEC);
+            printf("Elapsed t_exec - Child:\t%.4f s\n", 
+            ((double)(endOfChild - start)) * 1e3 / CLOCKS_PER_SEC);
         }
     }
 
 
     return 0;
 }
+
 ```
 
-![fig_1.png](fig_1.png)
-Figure 1 Termial output when parent and child process’s niceness values are not changed
+<figure>
+    <img src="fig_1.png" alt="drawing" width="200"/>
+    <figcaption>Figure 1 Termial output when parent and child process’s niceness values are not changed</figcaption>
+</figure>
 
 
-    Then we changed the nice value of the parent process to 10 using the renice command.
+Then we changed the nice value of the parent process to 10 using the renice command.
 
-![fig_2.png](fig_2.png)
-Figure 2 nice value change
 
-![fig_3.png](fig_3.png)
-Figure 3 Terminal output after nice values change 
+<figure>
+    <img src="fig_2.png" alt="drawing" width="200"/>
+    <figcaption>Figure 2 nice value change</figcaption>
+</figure>
+<figure>
+    <img src="fig_3.png" alt="drawing" width="200"/>
+    <figcaption>Figure 3 Terminal output after nice values change</figcaption>
+</figure> 
 
 As we can see above after the renice the parent process takes longer to finish executing because of the new lower priority.
 
@@ -314,7 +329,7 @@ As we can see above after the renice the parent process takes longer to finish e
 usleep() was used to give a 1 ms delay after each output to the screen in the following task.
 
 task2b.c
-
+<!-- make code block sma -->
 ```c	
 #include <stdio.h>
 #include <stdlib.h>
@@ -356,43 +371,37 @@ int main()
     return 0;
 }
 
+
 ```
 
-![fig_4.png](fig_4.png)
-Figure 5: Terminal output after adding a 1ms delay
+
+<figure>
+  <img src="fig_5.png" alt="fig_5.png">
+  <figcaption>Figure 5 Terminal output after adding a 1ms delay</figcaption>
+</figure>
+
 
 As we can observe above the execution times of each process increased with a factor of closer to 10 in comparison to before. Also, we observed that the execution times of both processes are very similar now.
 
-## 2.3 Simulatanuoesrunning of time-consuming program
+2.3 Simulatanuoes running of time-consuming program
 Part a) of task 2 was run again but now while running a time-consuming program in the background. We can see that the execution times have slightly increased, the max being around 9ms(Figure 7).
 
 
-![fig_5.png](fig_5.png)
 
-Figure 5: Terminal output after adding a 1ms delay
+<figure>
+  <img src="fig_6.png" alt="fig_6.png">
+  <figcaption>Figure 6 Terminal output when only task2a.c is run</figcaption>
+</figure>
 
-## 2.3 Simulatanuoesrunning of time-consuming program
+<figure>
+  <img src="fig_7.png" alt="fig_7.png">
+  <figcaption>Figure 7 Terminal output when only task2b.c is run</figcaption>
+</figure>
 
-* of task 2 was run again but now while running a time-consuming program in the background. 
-
-Part a) of task 2 was run again but now while running a time-consuming program in the background.   
-
-    We can see that the execution times have slightly increased, the max being around 9ms(Figure 7).
-
-Figure 6 Terminal output when only task2a.c is run
-
-![fig_6.png](fig_6.png)
-
-![fig_7.png](fig_7.png)
-    Figure 7 Terminal output when task2a.c and the time-consuming program are run
+Part b) of task 2 was run again but now while running a time-consuming program in the background. We can see that the execution times have increased and the max is now around 0.18s. This could be due to the CPU having to share its cores among the time-consuming process and the parent and child processes that print out to the terminal(Figure 9).
 
 
-Part b) of task 2 was run again but now while running a time-consuming program in the background. We can see that the execution times have increased and the max is now around 0.18s. This could be due to the CPU having to share its cores among the time-consuming process and the parent and child processes that print out to the terminal(Figure 9).D
-
-![fig_8.png](fig_8.png)
-
-Figure 8 Terminal output when only task2b.c is run
-
-![fig_9.png](fig_9.png)
-
-Figure 9 Termial output when task2b.c and the time-consuming program are run
+<figure>
+  <img src="fig_7.png" alt="fig_7.png">
+  <figcaption>Figure 7 Terminal output when only task2b.c is run</figcaption>
+</figure>
