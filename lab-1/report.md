@@ -79,3 +79,110 @@ int main(int argc, char *argv[]) {
 
 ### Measured Frequency
 ![meas1](tek00000_c_meas.png)
+
+
+
+## Task 2
+
+Two approaches were perfomed
+
+### Approach 1
+
+As simple counter was made that runs for 30 seconds from the start time and prints the counter value to the file, together with the niceness value.
+
+```c
+#include <stdio.h>
+#include <time.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <fcntl.h>
+#include <string.h>
+
+#define MAX_TIME 30
+
+int main(int argc, char *argv[]) {
+    if (argc != 2) {
+        printf("Usage: ./print_string <string>\n");
+        return 1;
+    }
+    char *niceness = argv[1];
+    long long counter = 0;
+    time_t start_time, current_time;
+    pid_t pid = getpid();
+
+    // Get the start time
+    time(&start_time);
+
+    // Run for 60 seconds
+    do {
+        counter++;
+        time(&current_time);
+    } while (difftime(current_time, start_time) < MAX_TIME);
+
+    // Generate the file name
+    char file_name[50];
+    snprintf(file_name, sizeof(file_name), "%d.txt", pid);
+
+    // Write the counter value to the file
+    FILE *file = fopen(file_name, "w");
+    if (file == NULL) {
+        printf("Error: Unable to open the file.\n");
+        return 1;
+    }
+
+    fprintf(file, "counter = %lld\n", counter);
+    fprintf(file, "niceness = %s\n", niceness);
+    
+    fclose(file);
+
+    printf("Counter value is written to the file %s\n", file_name);
+
+    return 0;
+}
+
+```
+
+The process are called by a bash script that runs the process with different niceness values.
+
+```bash
+
+# Compile the C program
+gcc -o counter counter.c
+
+# Declare an array of niceness values
+niceness_values=(0 0 0 0 0 0 0 0 0 0)
+
+# Spawn 10 instances of the program with different niceness values
+for i in "${!niceness_values[@]}"; do
+    nice -n "${niceness_values[$i]}" ./counter "${niceness_values[$i]}"&
+done
+
+# Wait for all instances to finish
+wait
+
+echo "All instances have finished."
+
+```
+
+The results are shown in the table below.
+
+### Results
+
+#### Equal Niceness Values
+
+    niceness_values=(0 0 0 0 0 0 0 0 0 0)
+
+![equal](equal-niceness.png)
+
+#### Different Niceness Values
+
+![diff](dif-nicess.png)
+
+    niceness_values=(-20 0 0 0 0 0 0 0 0 20)
+
+### Stair Niceness Values
+    niceness_values=(-20 -15 -10 -5 0 5 10 15 20 20)
+![stair](staircase.png)
+
+### Conclusion from Approach 1
+As seen from the results, the processes with the same niceness value are executed yield about the same counter val, contrary to the case where -20 and 20 are used where there is a clear distinction between the two processes with the negative niceness value yielding a higher counter value than the positive niceness value.
