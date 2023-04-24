@@ -86,6 +86,7 @@ int main(int argc, char *argv[]) {
     <figcaption style="text-align: center;font-size: 12px;">Fig 1.2 Measured Frequency 1.4974 Mhz</figcaption>
 </figure>
 
+As we can observe from above screenshots, the direct register access approach is much faster than the shell script. This is because after memory mapping when we write directly into the shared memory space, it is immediately available and indicated as high or low in the GPIO 136 pin. When using the shell script the CPU  will be performing different function calls which takes a longer duration to write into the specific GPIO pin.
 
 
 ## Task 2
@@ -441,7 +442,6 @@ task 2 was run again but now while running a time-consuming program in the backg
   <img src="fig_8.png" alt="fig_8.png">
   <figcaption style="text-align: center;font-size: 12px;">Figure 2.8 Terminal output when task2b.c and the time-consuming program are run</figcaption>
 </figure>
-
 
 ### Used Material
 
