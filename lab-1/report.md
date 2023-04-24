@@ -26,10 +26,11 @@ echo $gpio > /sys/class/gpio/unexport
 
 ```
 
-### Measured Frequency
-![Drag Racing](tek00000.png)
+<figure>
+    <img src="tek00000.png" alt="tek00000" style="font-size: 12px;width: 90%;"/>
+    <figcaption style="text-align: center;font-size: 12px;">Fig 1.1 Measured Frequency 1.513 Khz</figcaption>
+</figure>
 
-The measured frequency is 1.5 Khz.
 
 ### C Code
 ```c
@@ -80,19 +81,22 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 ```
+<figure>
+    <img src="tek00000_c_meas.png" alt="equal" style="width: 90%;"/>
+    <figcaption style="text-align: center;font-size: 12px;">Fig 1.2 Measured Frequency 1.4974 Mhz</figcaption>
+</figure>
 
-### Measured Frequency
-![meas1](tek00000_c_meas.png)
 
-1.4974 Mhz
 
 ## Task 2
 
-Two approaches were perfomed
-
 ### Approach 1
 
-As simple counter was made that runs for 30 seconds from the start time and prints the counter value to the file, together with the niceness value.
+To create and manipulate two competing processes, we used the fork() call taught in the
+lectures. The idea was to create two functions that output to the screen, and track their
+response time (Elapsed t_exec) so as to observe how the scheduler executes them while
+influencing and changing the priorities(renice).
+
 
 ```c
 #include <stdio.h>
@@ -172,27 +176,50 @@ The results are shown in the table below.
 
 ### Results
 
-#### Equal Niceness Values
-    niceness_values=(0 0 0 0 0 0 0 0 0 0)
-![equal](equal-niceness.png)
+<figure>
+    <img src="equal-niceness.png" alt="equal" style="width: 90%;"/>
+    <figcaption style="text-align: center;font-size: 12px;">Fig 1.3 Equal Niceness Values</figcaption>
+</figure>
 
-#### Different Niceness Values
-    niceness_values=(-20 0 0 0 0 0 0 0 0 20)
-![diff](dif-nicess.png)
+<figure>
+    <img src="dif-nicess.png" alt="diff" style="width: 90%;"/>
+    <figcaption style="text-align: center;font-size: 12px;">Fig 1.4 Different Niceness Values</figcaption>
+</figure>
 
+<figure>
+    <img src="staircase.png" alt="stair" style="width: 90%;"/>
+    <figcaption style="text-align: center;font-size: 12px;">Fig 1.5 Stair Niceness Values</figcaption>
+</figure>
 
-### Stair Niceness Values
-    niceness_values=(-20 -15 -10 -5 0 5 10 15 20 20)
-![stair](staircase.png)
+<figure>
+    <img src="equal-niceness.png" alt="equal" style="width: 90%;"/>
+    <figcaption Style="text-align: center;font-size: 12px;">Fig 1.6 Equal Niceness Values</figcaption>
+</figure>
+
+<figure>
+    <img src="dif-nicess.png" alt="diff" style="width: 90%;"/>
+    <figcaption Style="text-align: center;font-size: 12px;">Fig 1.7 Different Niceness Values</figcaption>
+</figure>
+<figure>
+    <img src="staircase.png" alt="stair" style="width: 90%;"/>
+    <figcaption Style="text-align: center;font-size: 12px;">Fig 1.8 Stair Niceness Values</figcaption>
+</figure>
 
 ### Sum of work done by test case
 
-![sum](sum_of_counter_by_case.png)
+<figure>
+    <img src="sum_of_counter_by_case.png" alt="equal" style="width: 90%;"/>
+    <figcaption style="text-align: center;font-size: 12px;">Fig 1.9 Sum of work done by test case</figcaption>
+</figure>
+
+
 
 
 
 * Change the „nice value“ of one process by using the renice command. What’s the
-effect to the output? Explain!
+effect to the output?
+
+The renice command changes the niceness value of a process. The lower the value, the higher the priority of the process. The higher the value, the lower the priority of the process. The default niceness value is 0. The renice command can be used to change the niceness value of a process. 
 
 Process tested with niceness value of 0.
 
@@ -231,18 +258,26 @@ int main() {
 
 Output of the process with
 
-![output](without_delay.png)
+<figure>
+    <img src="without_delay.png" alt="equal" style="width: 90%;"/>
+    <figcaption style="text-align: center;font-size: 12px;">Fig 1.10 Output of the process with niceness value of 0</figcaption>
+</figure>
 
+<figure>
+    <img src="fork_image.png" alt="equal" style="width: 90%;"/>
+    <figcaption style="text-align: center;font-size: 12px;">Fig 1.11 timelane of the process with niceness value of 0</figcaption>
+</figure>
 
-Timelane of the process with niceness value of 0
-
-![timelane](fork_image.png)
 
 
 * Insert a waiting period of 1 ms after each output. What’s the effect to the assignment
 of calculation time?
 
-![output](with_delay.png)
+<figure>
+    <img src="with_delay.png" alt="equal" style="width: 90%;"/>
+    <figcaption style="text-align: center;font-size: 12px;">Fig 1.12 Output of the process with niceness value of 0 and 1ms delay</figcaption>
+</figure>
+
 
 ### Conclusion from Approach 1
 As seen from the results, the processes with the same niceness value are executed yield about the same counter val, contrary to the case where -20 and 20 are used where there is a clear distinction between the two processes with the negative niceness value yielding a higher counter value than the positive niceness value.
@@ -250,12 +285,16 @@ A interesting side note is that the niceness did not change the total throughput
 
 ## Aproach 2
 
-To create and manipulate two competing processes, we used the fork() call taught in the lectures. The idea was to create two functions that output to the screen, and track their response time (Elapsed t_exec) so as to observe how the scheduler executes them while influencing and changing the priorities(renice).
+To create and manipulate two competing processes, we used the fork() call taught in the
+lectures. The idea was to create two functions that output to the screen, and track their
+response time (Elapsed t_exec) so as to observe how the scheduler executes them while
+influencing and changing the priorities(renice).
 
-2.1 Change the nice value
+
+## 2.1 Change the nice value
 A c-program with the fork() call was developed to create two competing processes, both of which write to the screen without using any stream functions.
 
-task2a.c
+### task2a.c
 
 ```c
 #include <stdio.h>
@@ -303,23 +342,26 @@ int main()
 
 ```
 
+To compile and then run the c code file the below commands were entered in the terminal.
+
+```bash
+gcc task2a.c -o task2a
+./task2a
+```
+
 <figure>
-    <img src="fig_1.png" alt="drawing" width="200"/>
-    <figcaption>Figure 1 Termial output when parent and child process’s niceness values are not changed</figcaption>
+    <img src="fig_1.png" alt="drawing" style="width: 90%;"/>
+    <figcaption style="text-align: center;font-size: 12px;">Figure 2.1 Terminal output when parent and child process’s niceness values are not changed</figcaption>
 </figure>
+
 
 
 Then we changed the nice value of the parent process to 10 using the renice command.
 
-
 <figure>
-    <img src="fig_2.png" alt="drawing" width="200"/>
-    <figcaption>Figure 2 nice value change</figcaption>
+    <img src="fig_3.png" alt="drawing" style="width: 90%;"/>
+    <figcaption style="text-align: center;font-size: 12px;">Fig 2.2 Terminal output after nice values change</figcaption>
 </figure>
-<figure>
-    <img src="fig_3.png" alt="drawing" width="200"/>
-    <figcaption>Figure 3 Terminal output after nice values change</figcaption>
-</figure> 
 
 As we can see above after the renice the parent process takes longer to finish executing because of the new lower priority.
 
@@ -328,7 +370,7 @@ As we can see above after the renice the parent process takes longer to finish e
 
 usleep() was used to give a 1 ms delay after each output to the screen in the following task.
 
-task2b.c
+#### task2b.c c code
 <!-- make code block sma -->
 ```c	
 #include <stdio.h>
@@ -374,34 +416,35 @@ int main()
 
 ```
 
-
 <figure>
-  <img src="fig_5.png" alt="fig_5.png">
-  <figcaption>Figure 5 Terminal output after adding a 1ms delay</figcaption>
-</figure>
+  <img src="fig_4.png" alt="fig_4.png">
+  <figcaption style="text-align: center;font-size: 12px;">Figure 2.5 Terminal output after adding a 1ms delay</figcaption>
 
 
 As we can observe above the execution times of each process increased with a factor of closer to 10 in comparison to before. Also, we observed that the execution times of both processes are very similar now.
 
-2.3 Simulatanuoes running of time-consuming program
-Part a) of task 2 was run again but now while running a time-consuming program in the background. We can see that the execution times have slightly increased, the max being around 9ms(Figure 7).
-
+### 2.3 Simultaneous running of time-consuming program
+task 2 was run again but now while running a time-consuming program in the background. We can see that the execution times have slightly increased, the max being around 9ms (Figure 2.7).
 
 
 <figure>
   <img src="fig_6.png" alt="fig_6.png">
-  <figcaption>Figure 6 Terminal output when only task2a.c is run</figcaption>
+  <figcaption style="text-align: center;font-size: 12px;">Figure 2.6 Terminal output when only task2a.c is run</figcaption>
 </figure>
 
 <figure>
   <img src="fig_7.png" alt="fig_7.png">
-  <figcaption>Figure 7 Terminal output when only task2b.c is run</figcaption>
+  <figcaption style="text-align: center;font-size: 12px;">Figure 2.7 Terminal output when only task2b.c is run</figcaption>
 </figure>
-
-Part b) of task 2 was run again but now while running a time-consuming program in the background. We can see that the execution times have increased and the max is now around 0.18s. This could be due to the CPU having to share its cores among the time-consuming process and the parent and child processes that print out to the terminal(Figure 9).
-
 
 <figure>
-  <img src="fig_7.png" alt="fig_7.png">
-  <figcaption>Figure 7 Terminal output when only task2b.c is run</figcaption>
+  <img src="fig_8.png" alt="fig_8.png">
+  <figcaption style="text-align: center;font-size: 12px;">Figure 2.8 Terminal output when task2b.c and the time-consuming program are run</figcaption>
 </figure>
+
+
+### Used Material
+
+- https://www.geeksforgeeks.org/nice-system-call-in-c/
+- https://www.geeksforgeeks.org/renice-system-call-in-c/
+- https://man7.org/linux/man-pages/man3/usleep.3.html
