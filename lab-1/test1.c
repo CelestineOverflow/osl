@@ -14,18 +14,17 @@ int main() {
         perror("Fork failed");
         exit(1);
     }
-    int pid_num = getpid(); 
+    
+    int is_child = pid == 0;
 
-    for (int i = 0; i < 1000; i++)
-    {
-        if (pid == 0) {
-            putchar('O'); 
-            usleep(1000);    
+    int iterations = 1000000;
+    for (int i = 0; i < iterations; i++) {
+        if (is_child) {
+            putchar('x');
         } else {
-            putchar('X');
-            usleep(1000);
-
+            putchar('.');
         }
+        usleep(1000);
     }
-    return 0;
 }
+        
